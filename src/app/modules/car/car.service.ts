@@ -1,3 +1,4 @@
+
 import httpStatus from "http-status";
 import { TBooking } from "../booking/booking.interface";
 import { Booking } from "../booking/booking.model";
@@ -5,6 +6,8 @@ import { TCar } from "./car.interface";
 import { Car } from "./car.model";
 import { AppError } from "../../errors/AppError";
 import mongoose from "mongoose";
+
+
 
 const createCarIntoDB=async(payload:TCar)=>{
     const result=await Car.create(payload)
@@ -28,6 +31,7 @@ const deleteCarDB=async(id:string)=>{
     const result=await Car.findByIdAndUpdate(id,{isDeleted:true},{new:true})
     return result
 }
+
 const returnCarDB = async (payload: Partial<TBooking>) => {
     const bookingId = payload.bookingId;
     const isBookingExist = await Booking.findById(bookingId).populate("car");
@@ -81,4 +85,6 @@ const returnCarDB = async (payload: Partial<TBooking>) => {
   };
 export const CarServices={
     createCarIntoDB,getAllCarsDB,getCarByIdDB,updateCarIntoDB,deleteCarDB,returnCarDB
+
+
 }

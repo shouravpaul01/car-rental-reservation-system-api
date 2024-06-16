@@ -27,6 +27,7 @@ const updateCarValidationSchema = z.object({
       .optional(),
   }),
 });
+
 const returnCarValidationSchema = z.object({
   body: z.object({
 bookingId:z.string({required_error:"The field is required"}),
@@ -46,4 +47,5 @@ export const CarValidations = {
   createCarValidationSchema,
   updateCarValidationSchema,
   returnCarValidationSchema
+
 };
