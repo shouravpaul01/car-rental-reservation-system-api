@@ -5,6 +5,8 @@ import mongoose, { Types } from "mongoose";
 import { Car } from "../car/car.model";
 import httpStatus from "http-status";
 import { AppError } from "../../errors/AppError";
+import { User } from "../user/user.model";
+import { JwtPayload } from "jsonwebtoken";
 
 const createBookingIntoDB=async(payload:TBooking)=>{
     const carId=payload?.car
@@ -49,10 +51,10 @@ const getAllBookingsDB=async(carId:string,date:string)=>{
     const result=await Booking.find(filter).populate('car').populate('user')
     return result
 }
-const getMyAllBookingDB=async(user:string)=>{
-//    const findUser=User.findOne()
-//    const result=await Booking.find().populate('car').populate('user')
-//    return result
+const getMyAllBookingDB=async(user:JwtPayload)=>{
+   const isUserExists=await User.findOne({email:user.email})
+   const result=await Booking.find({user:isUserExists?._id }).populate('car').populate('user')
+   return result
 }
 export const BookingServices={
     createBookingIntoDB,getAllBookingsDB,
