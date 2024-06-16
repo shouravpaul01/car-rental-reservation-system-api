@@ -12,7 +12,7 @@ router.get('/:id',CarControllers.getCarById)
 
 router.delete('/:id',auth(USER_ROLE.admin),CarControllers.deleteCar)
 router.put(
-    "/return",
+    "/return",auth(USER_ROLE.admin),
     validateRequest(CarValidations.returnCarValidationSchema),CarControllers.returnCar
   )
 
