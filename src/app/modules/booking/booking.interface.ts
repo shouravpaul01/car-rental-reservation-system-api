@@ -1,9 +1,11 @@
-import { Types } from "mongoose";
+import {  Types } from "mongoose";
+import { TCar } from "../car/car.interface";
 
-export type TBooking = {
+export type TBooking ={
+    bookingId?:Types.ObjectId,
     date: Date;
     user: Types.ObjectId; 
-    car: Types.ObjectId; 
+    car: TCar; 
     startTime: string; 
     endTime: string; 
     totalCost: number; 

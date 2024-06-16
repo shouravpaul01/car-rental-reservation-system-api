@@ -46,9 +46,14 @@ const returnCarDB = async (payload: Partial<TBooking>) => {
         "Booking End time can not greather then start time."
       );
     }
+    if (!isBookingExist.car ) {
+      throw new AppError(
+        httpStatus.INTERNAL_SERVER_ERROR,
+        "Price per hour is not available for the booked car."
+      );
+    }
   
-    const calculateTotalCost =
-      (endHour - startHour) * Number(isBookingExist.car?.pricePerHour);
+    const calculateTotalCost =(endHour - startHour) * Number(isBookingExist.car?.pricePerHour );
     payload.totalCost = calculateTotalCost;
     const session = await mongoose.startSession();
     try {
