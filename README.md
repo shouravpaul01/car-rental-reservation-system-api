@@ -10,11 +10,10 @@ The Car Rental Reservation System API allows users to search for available cars,
 
 - [Installation](#installation)
 - [Usage](#usage)
-- [API Endpoints](#api-endpoints)
 - [Features](#features)
-- [Contributing](#contributing)
-- [License](#license)
-- [Acknowledgments](#acknowledgments)
+- [API Endpoints](#api-endpoints)
+
+
 
 ## Installation
 
