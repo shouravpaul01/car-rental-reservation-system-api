@@ -5,6 +5,7 @@ import { AuthRoutes } from "./app/modules/auth/auth.route";
 import { CarRoutes } from "./app/modules/car/car.route";
 import { BookingRoutes } from "./app/modules/booking/booking.route";
 import notFound from "./app/middlewares/notFound";
+import { CarTypeRoutes } from "./app/modules/car-type/type.route";
 const app = express();
 
 app.use(express.json());
@@ -12,6 +13,7 @@ app.use(cors());
 
 //Routes
 app.use("/api/auth", AuthRoutes);
+app.use("/api/car-type", CarTypeRoutes);
 app.use("/api/cars", CarRoutes);
 app.use("/api/bookings", BookingRoutes);
 
