@@ -4,19 +4,36 @@ import { CarValidations } from "./car.validation";
 import { CarControllers } from "./car.controller";
 import auth from "../../middlewares/auth";
 import { USER_ROLE } from "../user/user.constant";
-const router =express.Router()
+import { upload } from "../../utils/uploadImageCloudinary";
+import parseData from "../../middlewares/parseData";
+const router = express.Router();
 
-router.post('/',auth(USER_ROLE.admin),validateRequest(CarValidations.createCarValidationSchema),CarControllers.createCarInto)
-router.get('/',CarControllers.getAllCars)
-router.get('/:id',CarControllers.getCarById)
-
-router.delete('/:id',auth(USER_ROLE.admin),CarControllers.deleteCar)
+router.post(
+  "/create-car",
+  auth(USER_ROLE.admin),
+  upload.single("file"),
+  parseData,
+  validateRequest(CarValidations.CarValidationSchema),
+  CarControllers.createCarInto
+);
+router.get("/", CarControllers.getAllCars);
+router.get("/single-car/:carId", CarControllers.getSingleCar);
+router.patch("/update-status/:carId",auth(USER_ROLE.admin), CarControllers.updateCarStatus);
+router.delete("/:id", auth(USER_ROLE.admin), CarControllers.deleteCar);
 router.put(
-    "/return",auth(USER_ROLE.admin),
-    validateRequest(CarValidations.returnCarValidationSchema),CarControllers.returnCar
-  )
+  "/return",
+  auth(USER_ROLE.admin),
+  validateRequest(CarValidations.returnCarValidationSchema),
+  CarControllers.returnCar
+);
 
-router.put('/:id',auth(USER_ROLE.admin),validateRequest(CarValidations.updateCarValidationSchema),CarControllers.updateCarInto)
+router.patch(
+  "/:carId",
+  auth(USER_ROLE.admin),
+  upload.single("file"),
+  parseData,
+  validateRequest(CarValidations.CarValidationSchema),
+  CarControllers.updateCarInto
+);
 
-
-export const CarRoutes=router 
+export const CarRoutes = router;

@@ -10,6 +10,9 @@ const carTypeSchema = new Schema<TCarType,CarTypeModel>(
         unique: true,
         trim: true
       },
+      icon: {
+        type: String,
+      },
       description: {
         type: String,
         trim: true

@@ -44,10 +44,11 @@ const globalErrorHandler = (
     errorMessages = simplifiedError?.errorMessages;
   } else if (error instanceof AppError) {
     statusCode = error?.statusCode;
+
     message = error.message;
     errorMessages = [
       {
-        path: '',
+        path:error.path || '',
         message: error?.message,
       },
     ];

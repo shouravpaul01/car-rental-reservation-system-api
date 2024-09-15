@@ -10,11 +10,11 @@ import { string } from "zod";
 const signinDB = async (payload: TSignin) => {
   const isUserExists = await User.findOne({ email: payload?.email }).select('+password');
   if (!isUserExists) {
-    throw new AppError(httpStatus.NOT_FOUND,"Incorrect user or password!.");   
+    throw new AppError(httpStatus.NOT_FOUND,'auth',"Incorrect user or password!.");   
   }
   const isMatchedPassword=await bcrypt.compare(payload?.password, isUserExists?.password);
   if (!isMatchedPassword) {
-    throw new AppError(httpStatus.NOT_FOUND,"Incorrect user or password!.");   
+    throw new AppError(httpStatus.NOT_FOUND,'auth',"Incorrect user or password!.");   
   }
   const jwtPayload={
     email:isUserExists.email,
@@ -22,7 +22,7 @@ const signinDB = async (payload: TSignin) => {
   }
  
   
-  const accessToken= jwt.sign(jwtPayload, config.jwt_secret as string, { expiresIn: 60 * 60 });
+  const accessToken= jwt.sign(jwtPayload, config.jwt_secret as string, { expiresIn:config.jwt_expries });
   const user=isUserExists.toObject();
   delete (user as { password?: string }).password;
   return {...user,token:accessToken}

@@ -1,15 +1,24 @@
 import { z } from "zod";
 
-const createCarValidationSchema = z.object({
+const CarValidationSchema = z.object({
   body: z.object({
-    name: z.string({ message: "The field is required." }),
-    description: z.string({ message: "The field is required." }),
-    color: z.string({ message: "The field is required." }),
-    isElectric: z.boolean({ message: "The field is required." }),
-    features: z.array(z.string({ message: "The field is required." })),
-    pricePerHour: z
-      .number({ message: "The field is required." })
-      .positive({ message: "Invalid price." }),
+    type:z.string().nonempty("The field is required."),
+    name: z.string().nonempty("The field is required."),
+    seats:z.number().min(1,"The field is required."),
+    bagCapability:z.string().nonempty("The field is required."),
+    fuelType:z.string().nonempty("The field is required."),
+    transmission:z.string().nonempty("The field is required."),
+    airConditioning:z.string().nonempty("The field is required."),
+    color: z.string().nonempty("The field is required."),
+    features: z.array(z.string().nonempty("The field is required."),),
+    description: z.string().nonempty("The field is required."),
+    pricePerHour:z.preprocess((val) => {
+      if (typeof val === "string") {
+        const parsed = parseFloat(val);
+        return isNaN(parsed) ? undefined : parsed;
+      }
+      return val;
+    }, z.number().nonnegative("Price per hour must be a positive number")),
   }),
 });
 const updateCarValidationSchema = z.object({
@@ -44,7 +53,7 @@ bookingId:z.string({required_error:"The field is required"}),
   }),
 });
 export const CarValidations = {
-  createCarValidationSchema,
+  CarValidationSchema,
   updateCarValidationSchema,
   returnCarValidationSchema
 

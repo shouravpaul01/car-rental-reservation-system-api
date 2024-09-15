@@ -13,7 +13,7 @@ app.use(cors());
 
 //Routes
 app.use("/api/auth", AuthRoutes);
-app.use("/api/car-type", CarTypeRoutes);
+app.use("/api/car-types", CarTypeRoutes);
 app.use("/api/cars", CarRoutes);
 app.use("/api/bookings", BookingRoutes);
 

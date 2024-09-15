@@ -5,7 +5,7 @@ import { CarTypeServices } from "./type.service";
 
 
 const createCarTypeInto = catchAsync(async (req, res) => {
-    const result = await CarTypeServices.createCarTypeIntoDB(req.body);
+    const result = await CarTypeServices.createCarTypeIntoDB(req.file,req.body);
     sendResponse(res, {
       statusCode: httpStatus.OK,
       status: true,
@@ -34,7 +34,7 @@ const createCarTypeInto = catchAsync(async (req, res) => {
   });
   const updateCarTypeInto = catchAsync(async (req, res) => {
     const { carTypeId } = req.params;
-    const result = await CarTypeServices.updateCarTypeIntoDB(carTypeId, req.body);
+    const result = await CarTypeServices.updateCarTypeIntoDB(carTypeId, req.file,req.body);
     sendResponse(res, {
       statusCode: httpStatus.OK,
       status: true,
@@ -44,10 +44,10 @@ const createCarTypeInto = catchAsync(async (req, res) => {
   });
   const updateCarTypeStatus = catchAsync(async (req, res) => {
     const { carTypeId } = req.params;
-    const { status } = req.query;
+    const { isActive } = req.query;
     const result = await CarTypeServices.updateCarTypeStatusDB(
         carTypeId,
-      status as string
+        isActive as string
     );
     sendResponse(res, {
       statusCode: httpStatus.OK,
