@@ -7,6 +7,9 @@ const createUserValidationSchema = z.object({
       .string()
       .nonempty("The field is required")
       .email("Invalid email address"),
+      phone:z.string().nonempty("The field is required").regex(/^01[3-9]\d{8}$/, {
+        message: "Phone number must be a valid Bangladeshi number and be 11 digits long.",
+      }),
     password: z
       .string()
       .nonempty("The field is required")

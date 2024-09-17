@@ -17,7 +17,9 @@ const signinDB = async (payload: TSignin) => {
     throw new AppError(httpStatus.NOT_FOUND,'auth',"Incorrect user or password!.");   
   }
   const jwtPayload={
+    name:isUserExists.name,
     email:isUserExists.email,
+    phone:isUserExists.phone,
     role:isUserExists.role
   }
  

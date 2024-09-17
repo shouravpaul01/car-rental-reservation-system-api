@@ -11,7 +11,7 @@ const verifyToken = (token: string) => {
     ) as JwtPayload;
     return decoded;
   } catch (error) {
-    throw new AppError(httpStatus.UNAUTHORIZED, "", "Unauthorized!");
+    throw new AppError(httpStatus.UNAUTHORIZED, "", "Unauthorized!.Please Login.");
   }
 };
 
