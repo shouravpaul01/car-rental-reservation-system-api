@@ -3,7 +3,7 @@ import { User } from "./user.model";
 import httpStatus from "http-status";
 
 const createUserIntoDB = async (payload: TUser) => {
-  console.log(payload)
+
   const isEmailExists = await User.findOne({ email: payload?.email });
   if (isEmailExists) {
     throw new Error("Already you are registered.");

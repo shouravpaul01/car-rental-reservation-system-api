@@ -10,4 +10,7 @@ export const config = {
   cloudinary_cloud_name: process.env.CLOUDINARY_CLOUD_NAME,
   cloudinary_api_key: process.env.CLOUDINARY_API_KEY,
   cloudinary_api_secret: process.env.CLOUDINARY_API_SECRET,
+  base_url:process.env.BASE_URL,
+  store_id:process.env.STORE_ID,
+  signature_key:process.env.SIGNATURE_KEY
 };

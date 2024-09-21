@@ -25,7 +25,7 @@ const createCarIntoDB = async (file: any, payload: TCar) => {
 const getAllCarsDB = async (query: Record<string, undefined>) => {
   const searchableFields = ["name"];
   const mainQuery = new QueryBuilder(
-    Car.find({}).populate("type"),
+    Car.find({}).populate("type").populate("price"),
     query
   ).search(searchableFields);
   const totalPages = (await mainQuery.totalPages()).totalQuery;
@@ -36,7 +36,7 @@ const getAllCarsDB = async (query: Record<string, undefined>) => {
   return result;
 };
 const getSingleCarDB = async (carId: string) => {
-  const result = await Car.findById(carId).populate("type");
+  const result = await Car.findById(carId).populate("type").populate("price");
   return result;
 };
 const updateCarIntoDB = async (carId: string,file:any, payload: Partial<TCar>) => {
@@ -80,19 +80,19 @@ const returnCarDB = async (payload: Partial<TBooking>) => {
   const bookingId = payload.bookingId;
   const isBookingExist = await Booking.findById(bookingId).populate("car");
   if (!isBookingExist) {
-    throw new AppError(httpStatus.NOT_FOUND, "Booking not found.");
+    throw new AppError(httpStatus.NOT_FOUND,"", "Booking not found.");
   }
   const startHour = parseFloat(isBookingExist.startTime.split(":")[0]);
   const endHour = parseFloat((payload.endTime as string).split(":")[0]);
   if (startHour > endHour) {
     throw new AppError(
-      httpStatus.NOT_FOUND,
+      httpStatus.NOT_FOUND,"",
       "Booking End time can not greather then start time."
     );
   }
   if (!isBookingExist.car) {
     throw new AppError(
-      httpStatus.INTERNAL_SERVER_ERROR,
+      httpStatus.INTERNAL_SERVER_ERROR,"",
       "Price per hour is not available for the booked car."
     );
   }
@@ -109,7 +109,7 @@ const returnCarDB = async (payload: Partial<TBooking>) => {
       { new: true, session }
     );
     if (!updateCarStatus) {
-      throw new AppError(httpStatus.NOT_FOUND, "Return failed.");
+      throw new AppError(httpStatus.NOT_FOUND,"", "Return failed.");
     }
     const result = await Booking.findByIdAndUpdate(bookingId, payload, {
       new: true,
@@ -118,7 +118,7 @@ const returnCarDB = async (payload: Partial<TBooking>) => {
       .populate("car")
       .populate("user");
     if (!result) {
-      throw new AppError(httpStatus.NOT_FOUND, "Booking return failed.");
+      throw new AppError(httpStatus.NOT_FOUND,"", "Booking return failed.");
     }
     await session.commitTransaction();
     await session.endSession();
@@ -126,7 +126,7 @@ const returnCarDB = async (payload: Partial<TBooking>) => {
   } catch (error) {
     await session.abortTransaction();
     await session.endSession();
-    throw new AppError(httpStatus.BAD_REQUEST, "Booking return failed.");
+    throw new AppError(httpStatus.BAD_REQUEST, "","Booking return failed.");
   }
 };
 export const CarServices = {

@@ -13,8 +13,8 @@ const createBookingInto = catchAsync(async (req, res) => {
   });
 });
 const getAllBookings = catchAsync(async (req, res) => {
-    const {carId,date}=req.query
-    const result = await BookingServices.getAllBookingsDB(carId as string,date as string);
+    
+    const result = await BookingServices.getAllBookingsDB(req.query as Record<string,undefined>);
     sendResponse(res, {
       statusCode: httpStatus.OK,
       status: true,
@@ -22,9 +22,21 @@ const getAllBookings = catchAsync(async (req, res) => {
       data: result,
     });
   });
+  const updateBookingApprovedStatus = catchAsync(async (req, res) => {
+    const { bookingId } = req.params;
+    const { isApproved } = req.query;
+    console.log(bookingId,isApproved)
+    const result = await BookingServices.updateBookingApprovedDB(bookingId, isApproved as string);
+    sendResponse(res, {
+      statusCode: httpStatus.OK,
+      status: true,
+      message: `Successfully ${(result as any).isApproved ? "Approved":"Approval Cencel"} .`,
+      data: result,
+    });
+  });
   const getMyAllBookings = catchAsync(async (req, res) => {
-    console.log(req.user)
-    const result = await BookingServices.getMyAllBookingDB(req.user);
+  
+    const result = await BookingServices.getMyAllBookingDB(req.query as Record<string,undefined>);
     sendResponse(res, {
       statusCode: httpStatus.OK,
       status: true,
@@ -32,8 +44,20 @@ const getAllBookings = catchAsync(async (req, res) => {
       data: result,
     });
   });
+  const updateBookingReturnStatus = catchAsync(async (req, res) => {
+    const { bookingId } = req.params;
+    const result = await BookingServices.updateBookingReturnStatusDB(bookingId);
+    sendResponse(res, {
+      statusCode: httpStatus.OK,
+      status: true,
+      message: "Successfully Car Returned. ",
+      data: result,
+    });
+  });
 export const BookingControllers={
     createBookingInto,
     getAllBookings,
-    getMyAllBookings
+    updateBookingApprovedStatus,
+    getMyAllBookings,
+    updateBookingReturnStatus
 }

@@ -5,6 +5,7 @@ export type TCar = {
   type: Types.ObjectId;
   name: string;
   image: string;
+  drivingType:string;
   seats:number;
   bagCapability:string | number;
   fuelType:string,
@@ -13,7 +14,7 @@ export type TCar = {
   description: string;
   color: string;
   features: string[];
-  pricePerHour: number;
+  price: Types.ObjectId;
   isActive: boolean;
   isDeleted: boolean;
 };

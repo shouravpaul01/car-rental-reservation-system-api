@@ -15,6 +15,10 @@ const carSchema = new Schema<TCar,CarModel>(
     image:{
         type:String,
     },
+    drivingType:{
+      type:String,
+      required:true
+  },
     seats:{
       type: Number,
       required: true,
@@ -49,9 +53,10 @@ const carSchema = new Schema<TCar,CarModel>(
       type: [String],
       required: true,
     },
-    pricePerHour: {
-      type: Number,
-      required: true,
+    price:  {
+      type: Schema.Types.ObjectId,
+      ref: "Price",
+      required:true
     },
     isActive: {
       type: Boolean,

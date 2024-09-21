@@ -1,16 +1,58 @@
 import { Schema, model } from "mongoose";
 import { TBooking } from "./booking.interface";
+import { number } from "zod";
 
-const bookingSchema = new Schema<TBooking>({
-   
-    user: { type: Schema.Types.ObjectId, ref: 'User', required: true }, 
-    car: { type:  Schema.Types.ObjectId, ref: 'Car', required: true }, 
-    startTime: { type: String, required: true },
-    pickupDate:{
-        type:Date,
+const bookingSchema = new Schema<TBooking>(
+  {
+    user: { type: Schema.Types.ObjectId, ref: "User", required: true },
+    car: { type: Schema.Types.ObjectId, ref: "Car", required: true },
+    drivingType:{
+      type:String
     },
-    endTime: { type: String, default:null},
-    totalCost: { type: Number, default: 0 }
-});
+    priceType:{
+      price:{
+        type:Number
+      },
+      type:{
+        type:String
+      }
+    },
+    startTime: { type: String, required: true },
 
-export const Booking =model<TBooking>('Booking', bookingSchema);
+    pickupDate: {
+      type: Date,
+    },
+    pickupLocation: {
+      type: String,
+    },
+
+    endTime: { type: String, default: null },
+    returnLocation: {
+      type: String,
+    },
+    startDate: {
+      type: Date,
+    },
+    returnStatus: {
+      type: Boolean,
+    },
+    returnDate: {
+      type: Date,
+    },
+    advancedDeposit: {
+      type: Number,
+    },
+    totalCost: { type: Number, default: 0 },
+    isApproved: {
+      type: Boolean,
+      default:false
+    },
+    
+    
+  },
+  {
+    timestamps: true,
+  }
+);
+
+export const Booking = model<TBooking>("Booking", bookingSchema);

@@ -5,6 +5,7 @@ const CarValidationSchema = z.object({
     type:z.string().nonempty("The field is required."),
     name: z.string().nonempty("The field is required."),
     seats:z.number().min(1,"The field is required."),
+    drivingType:z.string().nonempty("The field is required."),
     bagCapability:z.string().nonempty("The field is required."),
     fuelType:z.string().nonempty("The field is required."),
     transmission:z.string().nonempty("The field is required."),
@@ -12,13 +13,7 @@ const CarValidationSchema = z.object({
     color: z.string().nonempty("The field is required."),
     features: z.array(z.string().nonempty("The field is required."),),
     description: z.string().nonempty("The field is required."),
-    pricePerHour:z.preprocess((val) => {
-      if (typeof val === "string") {
-        const parsed = parseFloat(val);
-        return isNaN(parsed) ? undefined : parsed;
-      }
-      return val;
-    }, z.number().nonnegative("Price per hour must be a positive number")),
+    price:z.string().nonempty("The field is required."),
   }),
 });
 const updateCarValidationSchema = z.object({
@@ -30,10 +25,7 @@ const updateCarValidationSchema = z.object({
     features: z
       .array(z.string({ invalid_type_error: "Invalid feature." }))
       .optional(),
-    pricePerHour: z
-      .number({ message: "The field is required." ,invalid_type_error:"Invalid Price."})
-      .positive({ message: "Invalid price." })
-      .optional(),
+    pricePerHour: z.string().nonempty("The field is required.").optional(),
   }),
 });
 

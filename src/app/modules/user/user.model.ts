@@ -26,6 +26,12 @@ const userSchema = new Schema<TUser>({
   phone: {
     type: String,
   },
+  nid:{
+    type: String,
+  },
+  drivingLicence:{
+    type: String,
+  },
   address: {
     type: String,
   },
