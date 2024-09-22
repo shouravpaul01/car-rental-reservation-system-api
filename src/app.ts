@@ -7,6 +7,7 @@ import { BookingRoutes } from "./app/modules/booking/booking.route";
 import notFound from "./app/middlewares/notFound";
 import { CarTypeRoutes } from "./app/modules/car-type/type.route";
 import { PriceRoutes } from "./app/modules/price/price.route";
+import { PaymentRoutes } from "./app/modules/payment/payment.route";
 const app = express();
 
 app.use(express.json());
@@ -18,6 +19,7 @@ app.use("/api/car-types", CarTypeRoutes);
 app.use("/api/prices", PriceRoutes);
 app.use("/api/cars", CarRoutes);
 app.use("/api/bookings", BookingRoutes);
+app.use("/api/payment", PaymentRoutes);
 
 app.get("/", (req, res) => {
   res.send("Hello World!");

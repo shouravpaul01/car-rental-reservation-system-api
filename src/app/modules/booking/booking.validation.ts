@@ -29,6 +29,7 @@ const userInfoValidation = z.object({
       required_error: "The field is required.",
     }),
   }),
+  quantity:z.number().nonnegative("Quantity must be a positive number.")
 });
 
 // Company provided driving validation schema

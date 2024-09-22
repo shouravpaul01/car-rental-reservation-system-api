@@ -13,7 +13,13 @@ export type TBooking = {
   returnDate: Date;
   returnLocation: string;
   priceType: { price: number; type: string };
-  advancedDeposit: number;
+  advancedPaymentDetails:{
+    amount:number,
+    transectionId:string,
+    date:Date,
+    paymentStatus:"Pending" | "Paid"
+  };
+  quantity:number;
   totalCost: number;
   startDate: Date;
   isApproved: boolean;

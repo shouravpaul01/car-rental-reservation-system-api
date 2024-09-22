@@ -15,8 +15,10 @@ export type TCar = {
   color: string;
   features: string[];
   price: Types.ObjectId;
+  quantity:number;
   isActive: boolean;
   isDeleted: boolean;
+  isAvailable:boolean
 };
 export interface CarModel extends Model<TCar> {
   isNameExists(name: string): Promise<TCar | null>;
