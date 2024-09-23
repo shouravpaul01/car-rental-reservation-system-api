@@ -1,6 +1,6 @@
 export type TPaymentInfo = {
   transectionId: string;
-  advanceDeposit: number;
+  amount: number;
   customerName: string;
   customerEmail: string;
   customerPhone: string;

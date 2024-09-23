@@ -54,10 +54,21 @@ const getAllBookings = catchAsync(async (req, res) => {
       data: result,
     });
   });
+  const paymentAfterReturningCar = catchAsync(async (req, res) => {
+    const { bookingId } = req.params;
+    const result = await BookingServices.paymentAfterReturningCarDB(bookingId);
+    sendResponse(res, {
+      statusCode: httpStatus.OK,
+      status: true,
+      message: "Payment Done. ",
+      data: result,
+    });
+  });
 export const BookingControllers={
     createBookingInto,
     getAllBookings,
     updateBookingApprovedStatus,
     getMyAllBookings,
-    updateBookingReturnStatus
+    updateBookingReturnStatus,
+    paymentAfterReturningCar
 }

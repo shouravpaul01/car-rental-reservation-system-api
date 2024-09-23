@@ -22,26 +22,32 @@ const createBookingIntoDB = async (payload: TBooking) => {
   payload.advancedPaymentDetails = payload.advancedPaymentDetails || {};
   if (payload.priceType.type == "daily") {
     payload.advancedPaymentDetails.amount =
-      (payload.priceType.price * 50) / 100;
-      payload.advancedPaymentDetails.transectionId=generateTransactionId()
+      ((payload.priceType.price * 50) / 100) * payload.quantity;
+    payload.advancedPaymentDetails.date = new Date();
+    payload.advancedPaymentDetails.transectionId = generateTransactionId();
   } else {
-    payload.advancedPaymentDetails.amount = payload.priceType.price * 4;
-    payload.advancedPaymentDetails.transectionId=generateTransactionId()
+    payload.advancedPaymentDetails.amount =
+      payload.priceType.price * 4 * payload.quantity;
+    payload.advancedPaymentDetails.date = new Date();
+    payload.advancedPaymentDetails.transectionId = generateTransactionId();
   }
   const isCarExists = await Car.findById(carId);
   const isUserExists = await User.findOne({
     email: (payload.user as TUser).email,
   });
-  console.log(payload);
+
   //Check if car is exists
   if (!isCarExists) {
-    throw new AppError(httpStatus.NOT_FOUND, "bookingError", "You have failed to book the car.");
+    throw new AppError(
+      httpStatus.NOT_FOUND,
+      "bookingError",
+      "You have failed to book the car."
+    );
   }
-
 
   const paymentInfo = {
     transectionId: payload.advancedPaymentDetails.transectionId,
-    advanceDeposit: payload.advancedPaymentDetails.amount,
+    amount: payload.advancedPaymentDetails.amount,
     customerName: isUserExists
       ? isUserExists?.name
       : (payload.user as TUser).name,
@@ -96,17 +102,29 @@ const createBookingIntoDB = async (payload: TBooking) => {
     if (currentCarQty == 0) {
       updateCar.isAvailable = false;
     }
-    const isCarUpdateResult = await Car.findByIdAndUpdate(isCarExists._id,updateCar,{new:true,session});
+    const isCarUpdateResult = await Car.findByIdAndUpdate(
+      isCarExists._id,
+      updateCar,
+      { new: true, session }
+    );
     if (!isCarUpdateResult) {
-      throw new AppError(httpStatus.BAD_REQUEST, "bookingError", "Failed to booked Car.");
+      throw new AppError(
+        httpStatus.BAD_REQUEST,
+        "bookingError",
+        "Failed to booked Car."
+      );
     }
-    //Booked 
+    //Booked
     const booked = await Booking.create([payload], { session });
     if (!booked) {
-      throw new AppError(httpStatus.BAD_REQUEST, "bookingError", "Failed to booked Car.");
+      throw new AppError(
+        httpStatus.BAD_REQUEST,
+        "bookingError",
+        "Failed to booked Car."
+      );
     }
     //Payment
-    
+
     const paymentSuccessResult = await initiatePayment(paymentInfo);
     if (paymentSuccessResult.result !== "true") {
       await session.abortTransaction();
@@ -169,6 +187,7 @@ const getMyAllBookingDB = async (query: Record<string, undefined>) => {
 };
 const updateBookingReturnStatusDB = async (bookingId: string) => {
   let updateData: any = {};
+
   const isBookingExists = await Booking.findById(bookingId);
   if (!isBookingExists) {
     throw new AppError(httpStatus.NOT_FOUND, "", "Booking not found!.");
@@ -177,7 +196,7 @@ const updateBookingReturnStatusDB = async (bookingId: string) => {
     const { totalCost } = calculateTotalCost(
       isBookingExists.startDate,
       isBookingExists.startTime,
-      isBookingExists.priceType.price
+      isBookingExists.priceType.price * isBookingExists.quantity
     );
 
     updateData.totalCost = totalCost;
@@ -186,13 +205,13 @@ const updateBookingReturnStatusDB = async (bookingId: string) => {
     updateData.returnDate = new Date();
   }
   if (isBookingExists.priceType.type == "daily") {
-    const isCarExists = await Car.findById(isBookingExists.car).polygon(
+    const isCarExists = await Car.findById(isBookingExists.car).populate(
       "price"
     );
     const { totalCost } = calculateDailyCost(
       isBookingExists.pickupDate,
       isBookingExists.startTime,
-      isBookingExists.priceType.price,
+      isBookingExists.priceType.price * isBookingExists.quantity,
       (isCarExists?.price as any).hourly.price
     );
     updateData.totalCost = totalCost;
@@ -206,10 +225,66 @@ const updateBookingReturnStatusDB = async (bookingId: string) => {
   });
   return result;
 };
+const paymentAfterReturningCarDB = async (bookingId: string) => {
+  let updateData: any = {};
+  const isBookingExists = await Booking.findById(bookingId);
+  if (!isBookingExists) {
+    throw new AppError(httpStatus.NOT_FOUND, "", "Booking not found!.");
+  }
+  const isUserExists = await User.findById(isBookingExists.user);
+  const totalCost = isBookingExists.totalCost;
+  const advancedAmount = isBookingExists.advancedPaymentDetails.amount;
+  if (totalCost > advancedAmount) {
+    updateData.paymentDetails.amount = totalCost - advancedAmount;
+    updateData.paymentDetails.advancedAmount = advancedAmount;
+    updateData.paymentDetails.transectionId = generateTransactionId();
+    updateData.paymentDetails.date = new Date();
+    updateData.paymentDetails.paymentStatus = "Paid";
+  } else {
+    updateData.paymentDetails.returnAmount = advancedAmount - totalCost;
+    updateData.paymentDetails.advancedAmount = advancedAmount;
+    updateData.paymentDetails.transectionId = generateTransactionId();
+    updateData.paymentDetails.date = new Date();
+    updateData.paymentDetails.paymentStatus = "Paid";
+  }
+
+  const paymentInfo = {
+    transectionId: updateData.paymentDetails.transectionId,
+    amount: updateData.paymentDetails.amount,
+    customerName: isUserExists?.name,
+
+    customerEmail: isUserExists?.email,
+
+    customerPhone: isUserExists?.phone,
+  };
+ 
+  const paymentSuccessResult = await initiatePayment(paymentInfo as any);
+  if (paymentSuccessResult.result !== "true") {
+    throw new AppError(
+      httpStatus.NOT_FOUND,
+      "bookingError",
+      "Booking not found!."
+    );
+  }
+  const isUpdateBooking = await Booking.findByIdAndUpdate(
+    bookingId,
+    updateData,
+    { new: true }
+  );
+  if (!isUpdateBooking) {
+    throw new AppError(
+      httpStatus.NOT_FOUND,
+      "bookingError",
+      "Booking not found!."
+    );
+  }
+  return paymentSuccessResult;
+};
 export const BookingServices = {
   createBookingIntoDB,
   getAllBookingsDB,
   updateBookingApprovedDB,
   getMyAllBookingDB,
   updateBookingReturnStatusDB,
+  paymentAfterReturningCarDB,
 };

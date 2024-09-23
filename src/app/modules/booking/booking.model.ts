@@ -40,11 +40,11 @@ const bookingSchema = new Schema<TBooking>(
       type: Date,
     },
     advancedPaymentDetails: {
-      amount:{
-        type:Number
+      amount: {
+        type: Number,
       },
-      transectionId:{
-        type:String
+      transectionId: {
+        type: String,
       },
       date: {
         type: Date,
@@ -55,7 +55,30 @@ const bookingSchema = new Schema<TBooking>(
       },
     },
     totalCost: { type: Number, default: 0 },
-    quantity:{type:Number},
+    quantity: { type: Number },
+    paymentDetails: {
+      advancedAmount: {
+        type: Number,
+      },
+      returnAmount:{
+        type: Number,
+        default:0
+      },
+      amount: {
+        type: Number,
+        default:0
+      },
+      transectionId: {
+        type: String,
+      },
+      date: {
+        type: Date,
+      },
+      paymentStatus: {
+        type: String,
+        default: "Pending",
+      },
+    },
     isApproved: {
       type: Boolean,
       default: false,

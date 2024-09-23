@@ -4,13 +4,13 @@ import { sendResponse } from "../../utils/sendResponse";
 import { PaymentServices } from "./payment.service";
 
 const paymentConfirmation=catchAsync(async(req,res)=>{
-    const {txnId}=req.query
-    const result = await PaymentServices.paymentConfirmationDB(txnId as string);
-    sendResponse(res, {
-      statusCode: httpStatus.OK,
-      status: true,
-      message: "Succesfully Booked a Car.",
-      data: result,
-    });
+    const {txnId ,status}=req.query
+    const result = await PaymentServices.paymentConfirmationDB(txnId as string,status as string);
+    if (result) {
+      res.redirect('http://localhost:5173/dashboard?tab=my-bookings&payment=success')
+    }else{
+      res.redirect('http://localhost:5173/payment-cencel')
+    }
+    
 })
 export const PaymentControllers={paymentConfirmation}

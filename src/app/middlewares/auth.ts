@@ -10,7 +10,7 @@ import verifyToken from "../utils/verifyToken";
 const auth = (...requiredRoles: TUserRole[]) => {
   return catchAsync(async (req: Request, res: Response, next: NextFunction) => {
     const token = req.headers.authorization?.split(" ")[1];
-   console.log(token)
+   
     if (!token) {
       throw new AppError(httpStatus.UNAUTHORIZED,'', "You are not authorized!");
     }
@@ -18,7 +18,7 @@ const auth = (...requiredRoles: TUserRole[]) => {
     const decoded=  verifyToken(token)
    console.log(decoded)
   
-    const { email, role, iat } = decoded;
+    const { role } = decoded;
     if (requiredRoles && !requiredRoles.includes(role)) {
       throw new AppError(
         httpStatus.UNAUTHORIZED,'',

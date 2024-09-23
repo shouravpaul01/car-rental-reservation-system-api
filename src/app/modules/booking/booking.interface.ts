@@ -1,7 +1,14 @@
 import { Types } from "mongoose";
 import { TCar } from "../car/car.interface";
 import { TUser } from "../user/user.interface";
-
+type TPaymentDetails = {
+  advancedAmount: number;
+  returnAmount?: number;
+  amount?: number;       
+  transectionId: string;
+  date:Date,
+  paymentStatus?: 'Pending' | 'Paid'; 
+};
 export type TBooking = {
   user: TUser | Types.ObjectId;
   car: TCar;
@@ -19,8 +26,11 @@ export type TBooking = {
     date:Date,
     paymentStatus:"Pending" | "Paid"
   };
+
   quantity:number;
   totalCost: number;
+  paymentDetails:TPaymentDetails;
+  paymentStatus:"Pending" | "Paid";
   startDate: Date;
   isApproved: boolean;
   returnStatus: boolean;
