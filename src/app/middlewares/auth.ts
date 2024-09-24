@@ -16,7 +16,7 @@ const auth = (...requiredRoles: TUserRole[]) => {
     }
     // checking if the given token is valid
     const decoded=  verifyToken(token)
-   console.log(decoded)
+
   
     const { role } = decoded;
     if (requiredRoles && !requiredRoles.includes(role)) {

@@ -1,5 +1,5 @@
 import { string } from "zod";
-import { TBooking } from "./booking.interface";
+import { TBooking, TPaymentDetails } from "./booking.interface";
 import { Booking } from "./booking.model";
 import mongoose, { Types } from "mongoose";
 import { Car } from "../car/car.model";
@@ -194,12 +194,14 @@ const updateBookingReturnStatusDB = async (bookingId: string) => {
   }
   if (isBookingExists.priceType.type == "hourly") {
     const { totalCost } = calculateTotalCost(
-      isBookingExists.startDate,
+      isBookingExists.drivingType == "Self Driving"
+        ? isBookingExists.startDate
+        : isBookingExists.pickupDate,
       isBookingExists.startTime,
       isBookingExists.priceType.price * isBookingExists.quantity
     );
 
-    updateData.totalCost = totalCost;
+    updateData.totalCost = totalCost.toFixed(2);
     updateData.endTime = `${new Date().getHours()}:${new Date().getMinutes()}`;
     updateData.returnStatus = true;
     updateData.returnDate = new Date();
@@ -208,13 +210,17 @@ const updateBookingReturnStatusDB = async (bookingId: string) => {
     const isCarExists = await Car.findById(isBookingExists.car).populate(
       "price"
     );
+
     const { totalCost } = calculateDailyCost(
-      isBookingExists.pickupDate,
+      isBookingExists.drivingType == "Self Driving"
+        ? isBookingExists.startDate
+        : isBookingExists.pickupDate,
       isBookingExists.startTime,
       isBookingExists.priceType.price * isBookingExists.quantity,
-      (isCarExists?.price as any).hourly.price
+      (isCarExists?.price as any).hourly.ratePerHour * isBookingExists.quantity
     );
-    updateData.totalCost = totalCost;
+
+    updateData.totalCost = totalCost.toFixed(2);
     updateData.endTime = `${new Date().getHours()}:${new Date().getMinutes()}`;
     updateData.returnStatus = true;
     updateData.returnDate = new Date();
@@ -228,6 +234,7 @@ const updateBookingReturnStatusDB = async (bookingId: string) => {
 const paymentAfterReturningCarDB = async (bookingId: string) => {
   let updateData: any = {};
   const isBookingExists = await Booking.findById(bookingId);
+  console.log(isBookingExists);
   if (!isBookingExists) {
     throw new AppError(httpStatus.NOT_FOUND, "", "Booking not found!.");
   }
@@ -235,19 +242,23 @@ const paymentAfterReturningCarDB = async (bookingId: string) => {
   const totalCost = isBookingExists.totalCost;
   const advancedAmount = isBookingExists.advancedPaymentDetails.amount;
   if (totalCost > advancedAmount) {
-    updateData.paymentDetails.amount = totalCost - advancedAmount;
-    updateData.paymentDetails.advancedAmount = advancedAmount;
-    updateData.paymentDetails.transectionId = generateTransactionId();
-    updateData.paymentDetails.date = new Date();
-    updateData.paymentDetails.paymentStatus = "Paid";
+    updateData.paymentDetails = {
+      amount: totalCost - advancedAmount,
+      advancedAmount: advancedAmount,
+      transectionId: generateTransactionId(),
+      date: new Date(),
+      paymentStatus: "Paid",
+    };
   } else {
-    updateData.paymentDetails.returnAmount = advancedAmount - totalCost;
-    updateData.paymentDetails.advancedAmount = advancedAmount;
-    updateData.paymentDetails.transectionId = generateTransactionId();
-    updateData.paymentDetails.date = new Date();
-    updateData.paymentDetails.paymentStatus = "Paid";
+    updateData.paymentDetails = {
+      returnAmount: advancedAmount - totalCost,
+      advancedAmount: advancedAmount,
+      transectionId: generateTransactionId(),
+      date: new Date(),
+      paymentStatus: "Paid",
+    };
   }
-
+  console.log(updateData);
   const paymentInfo = {
     transectionId: updateData.paymentDetails.transectionId,
     amount: updateData.paymentDetails.amount,
@@ -257,7 +268,7 @@ const paymentAfterReturningCarDB = async (bookingId: string) => {
 
     customerPhone: isUserExists?.phone,
   };
- 
+
   const paymentSuccessResult = await initiatePayment(paymentInfo as any);
   if (paymentSuccessResult.result !== "true") {
     throw new AppError(

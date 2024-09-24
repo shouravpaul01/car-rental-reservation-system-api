@@ -3,36 +3,36 @@ export const calculateTotalCost = (
   startTime: string,
   hourlyRate: number
 ) => {
-  const datePart = new Date(startDate).toISOString().split("T")[0]; // Extract date part
+  // Create the full date-time string in UTC
+  const datePart = startDate.toISOString().split("T")[0]; // Get the date part (YYYY-MM-DD)
   const combinedDateTimeString = `${datePart}T${startTime}:00.000Z`;
-  const bookingDate: any = new Date(combinedDateTimeString);
-  const [hours, minutes] = startTime.split(":").map(Number);
-  
-  bookingDate.setHours(hours);
-  bookingDate.setMinutes(minutes);
-  bookingDate.setSeconds(0); 
- 
-  // Get the current date and time
+
+  // Create the booking date from the combined string (assumes UTC initially)
+  let bookingDate: any = new Date(combinedDateTimeString);
+
+  bookingDate.setHours(bookingDate.getHours());
+
+  // Get the current date and time in the specified timezone
   const currentDate: any = new Date();
+
+  // Adjust for the desired timezone by adding the offset (Bangladesh = GMT+6)
+  currentDate.setHours(currentDate.getHours() + 6);
 
   // Check if the current date and time is the same or later than the booking time
   const isBookingTimeReached = currentDate >= bookingDate;
 
   if (isBookingTimeReached) {
-    console.log("pocaici");
     // Calculate the difference in time if booking time is reached
     const diffInMs = currentDate - bookingDate; // Difference in milliseconds
     const totalHours = diffInMs / (1000 * 60 * 60); // Convert milliseconds to hours
-    const totalTime = `${Math.floor(totalHours)}:${Math.floor(
-      (totalHours - Math.floor(totalHours)) * 60
-    )}`;
+    
     // Calculate total cost, rounding up to the nearest hour
     const totalCost = Math.ceil(totalHours) * hourlyRate;
 
-    return { totalCost, totalTime };
+    return { totalCost };
   } else {
     // If the current time is before the booking time, return zero cost and zero hours
-    return { totalCost: 0, totalTime: 0 };
+    return { totalCost: 0};
   }
 };
 
@@ -42,20 +42,27 @@ export const calculateDailyCost = (
   dailyRate: number,
   hourlyRate: number
 ) => {
-  // Convert startDateTime to a Date object and set the start time
-  const start: any = new Date(startDate);
-  const [hours, minutes] = startTime.split(":").map(Number);
-  start.setHours(hours, minutes, 0, 0); // Set the time part of startDate
+  // Create the full date-time string in UTC
+  const datePart = startDate.toISOString().split("T")[0]; // Get the date part (YYYY-MM-DD)
+  const combinedDateTimeString = `${datePart}T${startTime}:00.000Z`;
 
-  // Get the current date and time
-  const current: any = new Date();
+  // Create the booking date from the combined string (assumes UTC initially)
+  let bookingDate: any = new Date(combinedDateTimeString);
+
+  bookingDate.setHours(bookingDate.getHours());
+
+  // Get the current date and time in the specified timezone
+  const currentDate: any = new Date();
+
+  // Adjust for the desired timezone by adding the offset (Bangladesh = GMT+6)
+  currentDate.setHours(currentDate.getHours() + 6);
 
   // Check if the current date and time is the same or later than the booking time
-  const isBookingTimeReached = current >= start;
+  const isBookingTimeReached = currentDate >= bookingDate;
 
   if (isBookingTimeReached) {
     // Calculate the difference in time in milliseconds
-    const diffInMs = current - start;
+    const diffInMs = currentDate - bookingDate;
 
     // Convert milliseconds to hours
     const totalHours = diffInMs / (1000 * 60 * 60);
@@ -66,30 +73,15 @@ export const calculateDailyCost = (
 
     // Calculate the total cost
     let totalCost = fullDays * dailyRate;
-
     // Add cost for remaining hours
     if (remainingHours > 0) {
-      if (remainingHours <= 8) {
-        // If remaining hours are less than or equal to 8, apply a prorated daily rate
-        totalCost += (remainingHours / 8) * dailyRate;
-      } else {
-        // If remaining hours exceed 8, apply the daily rate for the first 8 hours
-        totalCost += dailyRate;
-
-        // Apply the hourly rate for additional hours beyond 8
-        const extraHours = remainingHours - 8;
-        totalCost += extraHours * hourlyRate;
-      }
+      // Apply the hourly rate for additional hours beyond 8
+      totalCost = totalCost + remainingHours * hourlyRate;
     }
 
-    // Calculate the total time in days and hours
-    const totalTime = `${Math.floor(totalHours / 24)}:${Math.floor(
-      totalHours % 24
-    )}`;
-
-    return { totalCost, totalTime };
+    return { totalCost };
   } else {
     // If the current time is before the booking time, return zero cost and zero hours
-    return { totalCost: 0, totalTime: "0:00" };
+    return { totalCost: 0 };
   }
 };

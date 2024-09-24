@@ -1,7 +1,7 @@
 import { Types } from "mongoose";
 import { TCar } from "../car/car.interface";
 import { TUser } from "../user/user.interface";
-type TPaymentDetails = {
+export type TPaymentDetails = {
   advancedAmount: number;
   returnAmount?: number;
   amount?: number;       
