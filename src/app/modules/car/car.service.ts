@@ -76,59 +76,7 @@ const deleteCarDB = async (id: string) => {
   return result;
 };
 
-const returnCarDB = async (payload: Partial<TBooking>) => {
-  const bookingId = payload.bookingId;
-  const isBookingExist = await Booking.findById(bookingId).populate("car");
-  if (!isBookingExist) {
-    throw new AppError(httpStatus.NOT_FOUND,"", "Booking not found.");
-  }
-  const startHour = parseFloat(isBookingExist.startTime.split(":")[0]);
-  const endHour = parseFloat((payload.endTime as string).split(":")[0]);
-  if (startHour > endHour) {
-    throw new AppError(
-      httpStatus.NOT_FOUND,"",
-      "Booking End time can not greather then start time."
-    );
-  }
-  if (!isBookingExist.car) {
-    throw new AppError(
-      httpStatus.INTERNAL_SERVER_ERROR,"",
-      "Price per hour is not available for the booked car."
-    );
-  }
 
-  const calculateTotalCost =
-    (endHour - startHour) * Number(isBookingExist.car?.pricePerHour);
-  payload.totalCost = calculateTotalCost;
-  const session = await mongoose.startSession();
-  try {
-    await session.startTransaction();
-    const updateCarStatus = await Car.findByIdAndUpdate(
-      isBookingExist.car,
-      { status: "available" },
-      { new: true, session }
-    );
-    if (!updateCarStatus) {
-      throw new AppError(httpStatus.NOT_FOUND,"", "Return failed.");
-    }
-    const result = await Booking.findByIdAndUpdate(bookingId, payload, {
-      new: true,
-      session,
-    })
-      .populate("car")
-      .populate("user");
-    if (!result) {
-      throw new AppError(httpStatus.NOT_FOUND,"", "Booking return failed.");
-    }
-    await session.commitTransaction();
-    await session.endSession();
-    return result;
-  } catch (error) {
-    await session.abortTransaction();
-    await session.endSession();
-    throw new AppError(httpStatus.BAD_REQUEST, "","Booking return failed.");
-  }
-};
 export const CarServices = {
   createCarIntoDB,
   getAllCarsDB,
@@ -136,5 +84,5 @@ export const CarServices = {
   updateCarIntoDB,
   updateCarStatusDB,
   deleteCarDB,
-  returnCarDB,
+  
 };

@@ -11,5 +11,6 @@ export type TUser = {
   nid:string,
   drivingLicence:string,
   address: string;
+  isActive:boolean
 };
 export type TUserRole = keyof typeof USER_ROLE;

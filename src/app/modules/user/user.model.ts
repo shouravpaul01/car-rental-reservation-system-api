@@ -35,6 +35,10 @@ const userSchema = new Schema<TUser>({
   address: {
     type: String,
   },
+  isActive:{
+    type:Boolean,
+    default:false
+  }
 });
 userSchema.pre("save", async function (next) {
   const user = this;
