@@ -13,7 +13,7 @@ router.post(
 );
 router.get("/",auth(USER_ROLE.admin), BookingControllers.getAllBookings);
 router.patch("/update-approval-status/:bookingId",auth(USER_ROLE.admin), BookingControllers.updateBookingApprovedStatus);
-router.get("/my-bookings",auth(USER_ROLE.user), BookingControllers.getMyAllBookings);
+router.get("/my-bookings",auth(USER_ROLE.user,USER_ROLE.admin), BookingControllers.getMyAllBookings);
 router.patch("/returned/:bookingId",auth(USER_ROLE.admin), BookingControllers.updateBookingReturnStatus);
 router.patch("/payment-after-returning-car/:bookingId",auth(USER_ROLE.user), BookingControllers.paymentAfterReturningCar);
 

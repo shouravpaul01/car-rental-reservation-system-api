@@ -13,7 +13,8 @@ const createUserInto = catchAsync(async (req, res) => {
   });
 });
 const updateUserInto = catchAsync(async (req, res) => {
-  const result = await UserServices.updateUserIntoDB(req.body);
+  const { userId } = req.params;
+  const result = await UserServices.updateUserIntoDB(userId, req.file, req.body);
   sendResponse(res, {
     statusCode: httpStatus.OK,
     status: true,
@@ -31,6 +32,16 @@ const getAllUsers = catchAsync(async (req, res) => {
     data: result,
   });
 });
+const getSingleUser = catchAsync(async (req, res) => {
+  const result = await UserServices.getSingleUserDB(req.params.email as string);
+  sendResponse(res, {
+    statusCode: httpStatus.OK,
+    status: true,
+    message: "Successfully retrieved",
+    data: result,
+  });
+});
+
 const updateUserRole = catchAsync(async (req, res) => {
   const result = await UserServices.updateUserRoleDB(req.query as Record<string,undefined>);
   sendResponse(res, {
@@ -40,9 +51,20 @@ const updateUserRole = catchAsync(async (req, res) => {
     data: result,
   });
 });
+const updateStatus = catchAsync(async (req, res) => {
+  const result = await UserServices.updateStatusDB(req.query as Record<string,undefined>);
+  sendResponse(res, {
+    statusCode: httpStatus.OK,
+    status: true,
+    message: result?.isBlocked ? "User blocked successfully." : "User unblocked successfully.",
+    data: result,
+  });
+});
 export const UserControllers = {
   createUserInto,
   updateUserInto,
   getAllUsers,
-  updateUserRole
+  getSingleUser,
+  updateUserRole,
+  updateStatus
 };

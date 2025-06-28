@@ -2,6 +2,7 @@ import { Schema, model } from "mongoose";
 import { TUser } from "./user.interface";
 import { config } from "../../config";
 import bcrypt from "bcrypt";
+import { boolean } from "zod";
 
 const userSchema = new Schema<TUser>({
   name: {
@@ -35,7 +36,7 @@ const userSchema = new Schema<TUser>({
   address: {
     type: String,
   },
-  isActive:{
+  isBlocked:{
     type:Boolean,
     default:false
   }

@@ -20,12 +20,6 @@ router.get("/", CarControllers.getAllCars);
 router.get("/single-car/:carId", CarControllers.getSingleCar);
 router.patch("/update-status/:carId",auth(USER_ROLE.admin), CarControllers.updateCarStatus);
 router.delete("/:id", auth(USER_ROLE.admin), CarControllers.deleteCar);
-router.put(
-  "/return",
-  auth(USER_ROLE.admin),
-  validateRequest(CarValidations.returnCarValidationSchema),
-  CarControllers.returnCar
-);
 
 router.patch(
   "/:carId",

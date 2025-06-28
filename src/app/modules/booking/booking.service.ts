@@ -165,7 +165,7 @@ const updateBookingApprovedDB = async (
   );
   return result;
 };
-const getMyAllBookingDB = async (query: Record<string, undefined>) => {
+const getMyAllBookingDB = async (query: Record<string, string | mongoose.Types.ObjectId | undefined>) => {
   const isUserExists = await User.findOne({ email: query?.email });
   if (isUserExists) {
     query["user"] = isUserExists._id;

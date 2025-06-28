@@ -4,9 +4,12 @@ const CarValidationSchema = z.object({
   body: z.object({
     type:z.string().nonempty("The field is required."),
     name: z.string().nonempty("The field is required."),
+    quantity: z
+    .number({ required_error: "The field is required." })
+    .nonnegative("Quantity must be a postive number."),
     seats:z.number().min(1,"The field is required."),
     drivingType:z.string().nonempty("The field is required."),
-    bagCapability:z.string().nonempty("The field is required."),
+    bagCapability: z.number({required_error:"The field is required."}),
     fuelType:z.string().nonempty("The field is required."),
     transmission:z.string().nonempty("The field is required."),
     airConditioning:z.string().nonempty("The field is required."),

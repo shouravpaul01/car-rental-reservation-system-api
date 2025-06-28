@@ -4,7 +4,6 @@ import { Booking } from "../booking/booking.model";
 import { TCar } from "./car.interface";
 import { Car } from "./car.model";
 import { AppError } from "../../errors/AppError";
-import mongoose from "mongoose";
 import { deleteImageCloudinary, uploadImageCloudinary } from "../../utils/uploadImageCloudinary";
 import { QueryBuilder } from "../../builder/QueryBuilder";
 import app from "../../../app";
@@ -27,7 +26,7 @@ const getAllCarsDB = async (query: Record<string, undefined>) => {
   const mainQuery = new QueryBuilder(
     Car.find({}).populate("type").populate("price"),
     query
-  ).search(searchableFields);
+  ).search(searchableFields).filter();
   const totalPages = (await mainQuery.totalPages()).totalQuery;
   const carsQuery = mainQuery.paginate();
   const cars = await carsQuery.modelQuery;

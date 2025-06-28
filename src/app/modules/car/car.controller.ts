@@ -67,15 +67,7 @@ const deleteCar = catchAsync(async (req, res) => {
   });
 });
 
-const returnCar = catchAsync(async (req, res) => {
-  const result = await CarServices.returnCarDB(req.body);
-  sendResponse(res, {
-    statusCode: httpStatus.OK,
-    status: true,
-    message: "Car returned successfully",
-    data: result,
-  });
-});
+
 export const CarControllers = {
   createCarInto,
   getAllCars,
@@ -83,5 +75,4 @@ export const CarControllers = {
   updateCarInto,
   updateCarStatus,
   deleteCar,
-  returnCar,
 };
