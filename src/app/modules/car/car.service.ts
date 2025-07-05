@@ -9,16 +9,19 @@ import { QueryBuilder } from "../../builder/QueryBuilder";
 import app from "../../../app";
 
 const createCarIntoDB = async (file: any, payload: TCar) => {
+  
   if (await Car.isNameExists(payload.name)) {
     throw new AppError(httpStatus.CONFLICT, "name", "Name Already exists.");
   }
   if (file) {
     //send image to cloudinary
     const { secure_url }: any = await uploadImageCloudinary(file?.filename, file?.path);
+    console.log(secure_url, "secure url in create car");
     payload.image = secure_url;
   }
 
   const result = await Car.create(payload);
+  console.log(result, "result in create car");
   return result;
 };
 const getAllCarsDB = async (query: Record<string, undefined>) => {
@@ -39,6 +42,7 @@ const getSingleCarDB = async (carId: string) => {
   return result;
 };
 const updateCarIntoDB = async (carId: string,file:any, payload: Partial<TCar>) => {
+
   const isCarExists=await Car.findById(carId)
   if (!isCarExists) {
     throw new AppError(httpStatus.NOT_FOUND ,"","Car Not Found.");   
