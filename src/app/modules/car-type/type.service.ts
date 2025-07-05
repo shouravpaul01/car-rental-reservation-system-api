@@ -20,10 +20,10 @@ const createCarTypeIntoDB = async (file: any,payload: TCarType) => {
 };
 const getAllCarTypesDB = async (query: Record<string, unknown>) => {
   const searchableFields = ["name"];
-
+console.log(query)
   const mainQuery = new QueryBuilder(CarType.find({}), query).search(
     searchableFields
-  );
+  ).filter();
 
   const totalPages = (await mainQuery.totalPages()).totalQuery;
   const typeQuery = mainQuery.paginate();

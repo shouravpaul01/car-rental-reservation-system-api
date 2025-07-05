@@ -14,6 +14,7 @@ const carSchema = new Schema<TCar, CarModel>(
     },
     image: {
       type: String,
+      
     },
     drivingType: {
       type: String,
